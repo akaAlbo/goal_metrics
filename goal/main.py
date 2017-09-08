@@ -236,6 +236,7 @@ class CalculateGoal:
 
 
 if __name__ == '__main__':
+    # CalculateGoal( distance [m], angle [degrees])
     cg = CalculateGoal(0.2, 20)
     cg.start(rospy.Time.now())
     rospy.spin()
