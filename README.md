@@ -27,7 +27,7 @@ class CalculatePublishRate:
     def get_result(self):
 ```
   using the "publish\_rate"-metrics as an example. Replace "PublishRate" with the name of your newly generated metrics.
-- In file ```atf\_metrics\src\atf\_metrics\__init__.py``` add:
+- In file ```atf/src/atf/atf_metrics/src/atf_metrics/__init__.py``` add:
 ```python
 from atf_metrics.calculate_*name* import Calculate*Name*, Calculate*Name*ParamHandler
 ```
@@ -37,7 +37,7 @@ from atf_metrics.calculate_jerk import CalculateJerk, CalculateJerkParamHandler
 ```
   here *name* stands for the name of your new metric (obviously).
   
-- In file ```atf\_metrics\config\metrics.yaml``` add:
+- In file ```atf/src/atf/atf_metrics/config/metrics.yaml``` add:
 ```
 *name*:
    handler: Calculate*Name*ParamHandler
@@ -48,7 +48,7 @@ jerk:
   handler: CalculateJerkParamHandler
 ```
 ### ATF Presenter
-- In file ```atf\_presenter\html\js\atf\_tools\test\_list.js``` add (using "jerk" as an example):
+- In file ```atf/atf_presenter/html/js/atf_tools/test_list.js``` add (using "jerk" as an example):
 ```javascript
 var plot_options = {
       jerk: {
