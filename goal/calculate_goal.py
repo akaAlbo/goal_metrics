@@ -49,7 +49,7 @@ class CalculateGoalParamHandler:
 
 
 class CalculateGoal:
-    def __init__(self, groundtruth, groundtruth_epsilon, topic='/base_pose_ground_truth'):
+    def __init__(self, topic, groundtruth, groundtruth_epsilon):
         self.active = False
         self.finished = False
         self.positiontopic = topic
