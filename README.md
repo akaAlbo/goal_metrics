@@ -30,7 +30,8 @@ class Application:
 
     def execute(self):
         self.atf.start("testblock_nav")
-        rospy.sleep(3)                      # catch published goal on topic
+        # necessary to catch goal published on topic /move_base/goal
+        rospy.sleep(3)
         sss.move("base", [4.0, 0.0, 0.0])
         self.atf.stop("testblock_nav")
         self.atf.shutdown()
