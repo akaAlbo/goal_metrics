@@ -3,6 +3,41 @@ Writinig a python programm to get the goal data as `[x, y, R, P, Y]` and compare
 of the robot, given as `[x, y, R, P, Y]`. Calculate the distance and angle between the robot position and the goal.
 Max allowed difference can be set as parameters.
 
+## Timing
+Best timing for 2 subscribed topics in `application.py` for `goal_metrics`:
+```python
+    rospy.sleep(.2)
+    [...]
+    rospy.sleep(3)
+```
+Timing with `rospy.sleep()` is necessary because otherwise there will be a threading error. The bagfile includes
+the topics needed for `goal_metrics`.
+```yaml
+topics:      /atf/testblock_nav/api          2 msgs    : atf_msgs/Api                     
+             /atf/testblock_nav/trigger      2 msgs    : atf_msgs/TestblockTrigger        
+             /base_pose_ground_truth      1143 msgs    : nav_msgs/Odometry                
+             /move_base/goal                 1 msg     : move_base_msgs/MoveBaseActionGoal
+```
+detailed example is shown below.
+```python
+class Application:
+    def __init__(self):
+        rp = RvizPublisher()
+        filepath = '/home/flg-ma/git/catkin_ws/src/msh/msh_bringup/launch/t_passage.launch'
+        rp.main(filepath, True, False, 2.0, 0.0, 0, 0, 0)
+        rospy.sleep(.2)                     # improved speed with localisation
+        self.atf = ATF()
+
+    def execute(self):
+        self.atf.start("testblock_nav")
+        rospy.sleep(3)                      # catch published goal on topic
+        sss.move("base", [4.0, 0.0, 0.0])
+        self.atf.stop("testblock_nav")
+        self.atf.shutdown()
+
+```
+
+
 ## History
 **V 1.0.0:**
 - first push
