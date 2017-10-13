@@ -5,14 +5,15 @@ Created on Sep 7, 2017
 
 @author: flg-ma
 @attention: Jerk Metric
-@contact: marcel.albus@ipa.fraunhofer.de (Marcel Albus)
-@version: 1.1.0
+@contact: albus.marcel@gmail.com (Marcel Albus)
+@version: 1.2.0
 """
 import rospy
 import numpy as np
 import math
 from nav_msgs.msg import Odometry
 from geometry_msgs.msg import PoseStamped
+from move_base_msgs.msg import MoveBaseActionGoal
 import tf
 
 
@@ -70,7 +71,7 @@ class CalculateGoalParamHandler:
 
 
 class CalculateGoal:
-    def __init__(self, groundtruth, groundtruth_epsilon, topic='/base_pose_ground_truth'):
+    def __init__(self, groundtruth, groundtruth_epsilon, goaltopic):
         '''
         init
         :param topic: topic on which position is published '/base_pose_ground_truth'
@@ -79,8 +80,8 @@ class CalculateGoal:
         '''
         self.active = False
         self.finished = False
-        self.positiontopic = topic
-        self.goaltopic = '/move_base_simple/goal'
+        self.positiontopic = '/base_pose_ground_truth'
+        self.goaltopic = goaltopic
         self.groundtruth = groundtruth
         self.groundtruth_epsilon = groundtruth_epsilon
         self.targetgoal = None
@@ -92,7 +93,9 @@ class CalculateGoal:
 
         # subscribe to topics in need
         rospy.Subscriber(self.positiontopic, Odometry, self.callback_position, queue_size=1)
-        rospy.Subscriber(self.goaltopic, PoseStamped, self.callback_goal, queue_size=1)
+        # rospy.Subscriber(self.goaltopic, PoseStamped, self.callback_goal, queue_size=1)
+        # /move_base/goal has MoveBaseActionGoal msg type
+        rospy.Subscriber(self.goaltopic, MoveBaseActionGoal, self.callback_goal, queue_size=1)
         rospy.init_node('goal_metrics_listener', anonymous=True)
 
         # only for colourful terminal visualization
@@ -124,12 +127,18 @@ class CalculateGoal:
         :return: --
         '''
         if self.active:
-            data_list = [float(msg.pose.position.x),
-                         float(msg.pose.position.y),
-                         float(msg.pose.orientation.x),
-                         float(msg.pose.orientation.y),
-                         float(msg.pose.orientation.z),
-                         float(msg.pose.orientation.w)]
+            # data_list = [float(msg.pose.position.x),
+            #              float(msg.pose.position.y),
+            #              float(msg.pose.orientation.x),
+            #              float(msg.pose.orientation.y),
+            #              float(msg.pose.orientation.z),
+            #              float(msg.pose.orientation.w)]
+            data_list = [float(msg.goal.target_pose.pose.position.x),
+                         float(msg.goal.target_pose.pose.position.y),
+                         float(msg.goal.target_pose.pose.orientation.x),
+                         float(msg.goal.target_pose.pose.orientation.y),
+                         float(msg.goal.target_pose.pose.orientation.z),
+                         float(msg.goal.target_pose.pose.orientation.w)]
 
             # print goal to console once (goal message is only published once)
             print self.tc.BOLD + '=' * 17
@@ -236,7 +245,8 @@ class CalculateGoal:
 
 
 if __name__ == '__main__':
-    cg = CalculateGoal(0.2, 20)
+    # CalculateGoal( distance [m], angle [degrees])
+    cg = CalculateGoal(0.2, 20, goaltopic='/move_base/goal')
     cg.start(rospy.Time.now())
     rospy.spin()
     cg.stop(rospy.Time.now())
