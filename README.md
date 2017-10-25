@@ -1,5 +1,7 @@
 # Goal Metrics
 ![Python Version](goal/badges/python-2.7.6-blue.svg)
+[![GitHub commit activity the past week, 4 weeks, yea](https://img.shields.io/github/commit-activity/4w/ipa-flg-ma/goal_metrics.svg)](https://github.com/ipa-flg-ma/goal_metrics)
+[![GitHub repo size in bytes](https://img.shields.io/github/repo-size/ipa-flg-ma/goal_metrics.svg)](https://github.com/ipa-flg-ma/goal_metrics)
 
 Writinig a python programm to get the goal data as `[x, y, R, P, Y]` and compare it to the actual position
 of the robot, given as `[x, y, R, P, Y]`. Calculate the distance and angle between the robot position and the goal.
@@ -74,7 +76,7 @@ from atf_metrics.calculate_*name* import Calculate*Name*, Calculate*Name*ParamHa
 from atf_metrics.calculate_jerk import CalculateJerk, CalculateJerkParamHandler
 ```
   here *name* stands for the name of your new metric (obviously).
-  
+
 - In file ```atf/src/atf/atf_metrics/config/metrics.yaml``` add:
 ```
 *name*:
