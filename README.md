@@ -44,7 +44,7 @@ class Application:
 
 ## Error Monitoring
 
-# `interface.subscribers.type` must be of type str
+### `interface.subscribers.type` must be of type str
 The errorlog shown below occurs often and stops `ATF` from exiting normally. Therefore no
 bagfile is written and no output can be generated using the provided `metrics`.
 
