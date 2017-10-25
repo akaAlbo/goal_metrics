@@ -1,4 +1,8 @@
 # Goal Metrics
+![Python Version](goal/badges/python-2.7.6-blue.svg)
+[![GitHub commit activity the past week, 4 weeks, yea](https://img.shields.io/github/commit-activity/4w/ipa-flg-ma/goal_metrics.svg)](https://github.com/ipa-flg-ma/goal_metrics)
+[![GitHub repo size in bytes](https://img.shields.io/github/repo-size/ipa-flg-ma/goal_metrics.svg)](https://github.com/ipa-flg-ma/goal_metrics)
+
 Writinig a python programm to get the goal data as `[x, y, R, P, Y]` and compare it to the actual position
 of the robot, given as `[x, y, R, P, Y]`. Calculate the distance and angle between the robot position and the goal.
 Max allowed difference can be set as parameters.
@@ -38,6 +42,60 @@ class Application:
 
 ```
 
+## Error Monitoring
+
+### `interface.subscribers.type` must be of type str
+The errorlog shown below occurs often and stops `ATF` from exiting normally. Therefore no
+bagfile is written and no output can be generated using the provided `metrics`.
+
+```bash
+except TypeError as te: self._check_types(ValueError("%s: '%s' when writing '%s'" % (type(te), str(te), str(locals().get('_x', self)))))
+File "/opt/ros/indigo/lib/python2.7/dist-packages/genpy/message.py", line 331, in _check_types
+check_type(n, t, getattr(self, n))
+File "/opt/ros/indigo/lib/python2.7/dist-packages/genpy/message.py", line 253, in check_type
+check_type(field_name+"[]", base_type, v)
+File "/opt/ros/indigo/lib/python2.7/dist-packages/genpy/message.py", line 263, in check_type
+check_type("%s.%s"%(field_name,n), t, getattr(field_val, n))
+File "/opt/ros/indigo/lib/python2.7/dist-packages/genpy/message.py", line 263, in check_type
+check_type("%s.%s"%(field_name,n), t, getattr(field_val, n))
+File "/opt/ros/indigo/lib/python2.7/dist-packages/genpy/message.py", line 253, in check_type
+check_type(field_name+"[]", base_type, v)
+File "/opt/ros/indigo/lib/python2.7/dist-packages/genpy/message.py", line 263, in check_type
+check_type("%s.%s"%(field_name,n), t, getattr(field_val, n))
+File "/opt/ros/indigo/lib/python2.7/dist-packages/genpy/message.py", line 229, in check_type
+raise SerializationError('field %s must be of type str'%field_name)
+SerializationError: field nodes[].interface.subscribers[].type must be of type str
+```
+
+The Error can be preventend when the lines below in the file `/home/flg-ma/git/catkin_ws/src/msh/msh_bringup/launch/application.xml`
+are **included**! The `robot_status_retriever.py` is necessary to complete the writing of the output in a `bagfile`.
+
+```xml
+<!-- sensorring -->
+<group>
+    <machine name="$(arg s1)" address="$(arg s1)" env-loader="$(arg env-script)" default="true" timeout="30"/>
+    <include ns="people_detection_sensorring" file="$(find cob_people_detection)/ros/launch/people_detection.launch">
+        <arg name="camera_namespace" value="sensorring_cam3d_upright"/>
+        <arg name="launch_head_detector" value="true"/>
+        <arg name="launch_face_detector" value="true"/>
+        <arg name="launch_face_recognizer" value="false"/>
+        <arg name="launch_detection_tracker" value="false"/>
+        <arg name="launch_face_capture" value="false"/>
+        <arg name="launch_coordinator" value="false"/>
+        <arg name="display_results_with_image_view" value="false"/>
+    </include>
+    <!--necessary, otherwise error occurs: SerializationError: field nodes[].interface.subscribers[].type must be of type str-->
+    <node pkg="msh_bringup" type="robot_status_retriever.py" name="robot_status" output="screen"/>
+    <include file="$(find msh_bringup)/launch/poi.launch">
+        <arg name="robot" value="$(arg robot)"/>
+    </include>
+    <node pkg="zbar_ros" type="barcode_reader_node" name="barcode_reader" output="screen">
+        <remap from="image" to="/sensorring_cam3d/rgb/image_raw"/>
+    </node>
+</group>
+```
+
+
 
 ## History
 **V 1.0.0:**
@@ -72,7 +130,7 @@ from atf_metrics.calculate_*name* import Calculate*Name*, Calculate*Name*ParamHa
 from atf_metrics.calculate_jerk import CalculateJerk, CalculateJerkParamHandler
 ```
   here *name* stands for the name of your new metric (obviously).
-  
+
 - In file ```atf/src/atf/atf_metrics/config/metrics.yaml``` add:
 ```
 *name*:
