@@ -94,7 +94,27 @@ are **included**! The `robot_status_retriever.py` is necessary to complete the w
     </node>
 </group>
 ```
+### `'std::out_of_range' what(): map::at`
+The errorlog shown below occurs when the robot can't find a path on the global costmap.
 
+```shell
+[ WARN] [1509019721.735995968, 7.195000000]: Path Segment ps 12 has partially blocked check the costmap. Illegal point idc: 15
+[ INFO] [1509019721.736094996, 7.195000000]: The blocked parts were cleared
+terminate called after throwing an instance of 'std::out_of_range'
+  what():  map::at
+[move_base-85] process has died [pid 6139, exit code -6, cmd /opt/ros/indigo/lib/move_base/move_base cmd_vel:=/base/twist_mux/command_navigation odom:=/base/odometry_controller/odometry __name:=move_base __log:=/home/flg-ma/.ros/log/4ca1f794-ba46-11e7-ad95-782bcbad4e67/move_base-85.log].
+log file: /home/flg-ma/.ros/log/4ca1f794-ba46-11e7-ad95-782bcbad4e67/move_base-85*.log
+```
+
+To fix this error, the `path_segments.yaml` has to be renewed, using `roslaunch ipa_navigation_bringup config_gui.launch pkg_env_config:=`rospack find msh_env_config` robot_env:=$ROBOT_ENV$` where `$ROBOT_ENV$` is the desired *robot_env*.
+I.e.:
+- `line_passage`
+- `line_passage_obstacle`
+- `line_passage_person_moving`
+- `narrow_passage_2_cone`
+- `t_passage`
+- `t_passage_obstacle`
+- ... (if more environments were added later...)
 
 
 ## History
