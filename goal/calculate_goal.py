@@ -69,9 +69,9 @@ class CalculateGoal:
         self.A_listener_goal = np.ones([0, 6], dtype=np.double)
 
         # subscribe to topics in need
-        rospy.Subscriber(self.positiontopic, Odometry, self.callback_position, queue_size=10)
+        rospy.Subscriber(self.positiontopic, Odometry, self.callback_position, queue_size=None)
         # /move_base/goal has MoveBaseActionGoal msg type
-        rospy.Subscriber(self.goaltopic, MoveBaseActionGoal, self.callback_goal, queue_size=10)
+        rospy.Subscriber(self.goaltopic, MoveBaseActionGoal, self.callback_goal, queue_size=None)
 
     def callback_position(self, msg):
         # if self.active:
